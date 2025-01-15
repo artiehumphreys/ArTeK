@@ -7,12 +7,17 @@ enum class TokenType{
     TEXT,
     COMMAND,
     SYMBOL,
-    MATH_INLINE,
-    MATH_DISPLAY,
+    ALIGN,
     NEWLINE,
-    EOF_TOKEN,
     BEGIN_ENV,
-    END_ENV
+    END_ENV,
+    LBRACE,
+    RBRACE,
+    MATH_INLINE,
+    SUPERSCRIPT,
+    SUBSCRIPT,
+    COMMENT,
+    EOF_TOKEN,
 };
 
 struct Token {
