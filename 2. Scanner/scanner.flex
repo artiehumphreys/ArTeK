@@ -25,6 +25,11 @@ WHITESPACE      [ \t]+
 
 {WHITESPACE}                { yycolumn += yyleng; }
 
+\\n                         {   this->setToken(TOKEN_NEWLINE, std::string(yytext));
+                                yycolumn = 0;
+                                return TOKEN_NEWLINE;
+                            }
+
 \\{COMMAND_NAME}            { this->setToken(TOKEN_COMMAND, std::string(yytext)); return TOKEN_COMMAND; }
 
 \\begin\{{ENV_NAME}\}       {
@@ -56,6 +61,8 @@ WHITESPACE      [ \t]+
 .                           { this->setToken(TOKEN_ERROR, std::string(yytext)); return TOKEN_ERROR; }
 
 %[^\n]*                     { yycolumn += yyleng; }
+
+<<EOF>>                     { this->setToken(TOKEN_EOF, ""); return TOKEN_EOF; }
 
 %%
 
