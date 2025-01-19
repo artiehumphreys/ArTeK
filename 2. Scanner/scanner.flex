@@ -1,71 +1,78 @@
 %{
-    #include <token.h>
+    #include "scanner.h"
     #include <string>
+    #include <iostream>
+    #include "token.h"
 
-    extern int yylineno;
-    int yycolumn = 1;
-
-    Token createToken(TokenType type, std::string value) {
-        Token token;
-        token.type = type;
-        token.value = value;
-        token.line = yylineno;
-        token.column = yycolumn;
-        yycolumn += yyleng;
-        return token;
-    }
-
+    int Scanner::yycolumn = 1;
 %}
 
-%option noyywrap
 %option c++
+%option noyywrap
+%option yyclass="Scanner"
 
 LETTER          [A-Za-z]
 DIGIT           [0-9]
 COMMAND_NAME    {LETTER}+
 ENV_NAME        {LETTER}+
-TEXT            [^\\{}\n&%$]+ #include math characters (+, -, =, etc.) for simplicity
+TEXT            [^\\{}\n&%$]+
 WHITESPACE      [ \t]+
 
 %%
 
-\\\{                        { return createToken(TOKEN_TEXT, "{"); }
-\\\}                        { return createToken(TOKEN_TEXT, "}"); }
+\\\{                        { this->setToken(TOKEN_TEXT, "{"); return TOKEN_TEXT; }
+\\\}                        { this->setToken(TOKEN_TEXT, "}"); return TOKEN_TEXT; }
 
 {WHITESPACE}                { yycolumn += yyleng; }
 
-\\{COMMAND_NAME}            { return createToken(TOKEN_COMMAND, std::string(yytext)); }
+\\{COMMAND_NAME}            { this->setToken(TOKEN_COMMAND, std::string(yytext)); return TOKEN_COMMAND; }
 
 \\begin\{{ENV_NAME}\}       {
                                 std::string env = std::string(yytext + 7, yyleng - 8);
-                                return createToken(TOKEN_BEGIN_ENV, env);
+                                this->setToken(TOKEN_BEGIN_ENV, env);
+                                return TOKEN_BEGIN_ENV;
                             }
 
 \\end\{{ENV_NAME}\}         {
                                 std::string env = std::string(yytext + 5, yyleng - 6);
-                                return createToken(TOKEN_END_ENV, env);
+                                this->setToken(TOKEN_END_ENV, env);
+                                return TOKEN_END_ENV;
                             }
 
-\$                          { return createToken(TOKEN_MATH_INLINE, "$"); }
+\$                          { this->setToken(TOKEN_MATH_INLINE, "$"); return TOKEN_MATH_INLINE; }
 
-\_                          { return createToken(TOKEN_SUBSCRIPT, "_"); }
+\_                          { this->setToken(TOKEN_SUBSCRIPT, "_"); return TOKEN_SUBSCRIPT; }
 
-\^                          { return createToken(TOKEN_SUPERSCRIPT, "^"); }
+\^                          { this->setToken(TOKEN_SUPERSCRIPT, "^"); return TOKEN_SUPERSCRIPT; }
 
-\{                          { return createToken(TOKEN_LBRACE, "{"); }
+\{                          { this->setToken(TOKEN_LBRACE, "{"); return TOKEN_LBRACE; }
 
-\}                          { return createToken(TOKEN_RBRACE, "}"); }
+\}                          { this->setToken(TOKEN_RBRACE, "}"); return TOKEN_RBRACE; }
 
-{TEXT}                      { return createToken(TOKEN_TEXT, std::string(yytext)); }
+{TEXT}                      { this->setToken(TOKEN_TEXT, std::string(yytext)); return TOKEN_TEXT; }
 
-&                           { return createToken(TOKEN_ALIGN, "&"); }
+&                           { this->setToken(TOKEN_ALIGN, "&"); return TOKEN_ALIGN; }
 
-.                           { return createToken(TOKEN_ERROR, std::string(yytext)); }
+.                           { this->setToken(TOKEN_ERROR, std::string(yytext)); return TOKEN_ERROR; }
 
 %[^\n]*                     { yycolumn += yyleng; }
 
-
-
 %%
+
+int Scanner::getNextToken() {
+    return yylex();
+}
+
+void Scanner::setToken(TokenType type, const std::string& value) {
+    currentToken.type  = type;
+    currentToken.value = value;
+    currentToken.line  = yylineno;
+    currentToken.column = yycolumn;
+    yycolumn += yyleng;
+}
+
+Token Scanner::getCurrentToken() const {
+    return currentToken;
+}
 
 int yywrap() { return 1; }
