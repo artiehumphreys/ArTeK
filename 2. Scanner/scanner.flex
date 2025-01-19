@@ -62,6 +62,10 @@ WHITESPACE      [ \t]+
 
 .                           { return createToken(TOKEN_ERROR, std::string(yytext)); }
 
+%[^\n]*                     { yycolumn += yyleng; }
+
+
+
 %%
 
 int yywrap() { return 1; }
