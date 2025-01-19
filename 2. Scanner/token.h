@@ -18,6 +18,7 @@ enum TokenType{
     TOKEN_SUBSCRIPT,
     TOKEN_COMMENT,
     TOKEN_EOF,
+    TOKEN_ERROR,
 };
 
 struct Token {

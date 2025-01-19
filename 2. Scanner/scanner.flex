@@ -60,6 +60,8 @@ WHITESPACE      [ \t]+
 
 &                           { return createToken(TOKEN_ALIGN, "&"); }
 
+.                           { return createToken(TOKEN_ERROR, std::string(yytext)); }
+
 %%
 
 int yywrap() { return 1; }
