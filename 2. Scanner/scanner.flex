@@ -25,8 +25,17 @@ WHITESPACE      [ \t]+
 
 {WHITESPACE}                { yycolumn += yyleng; }
 
-\\n                         {   this->setToken(TOKEN_NEWLINE, std::string(yytext));
-                                yycolumn = 0;
+\n                          {
+                                this->setToken(TOKEN_NEWLINE, "\n");
+                                yycolumn = 1;
+                                yylineno += 1;
+                                return TOKEN_NEWLINE;
+                            }
+
+\\n                         {
+                                this->setToken(TOKEN_NEWLINE, std::string(yytext));
+                                yycolumn = 1;
+                                yylineno += 1;
                                 return TOKEN_NEWLINE;
                             }
 
@@ -44,7 +53,7 @@ WHITESPACE      [ \t]+
                                 return TOKEN_END_ENV;
                             }
 
-\$                          { this->setToken(TOKEN_MATH_INLINE, "$"); return TOKEN_MATH_INLINE; }
+\${TEXT}\$                  { this->setToken(TOKEN_MATH_INLINE, std::string(yytext + 1, yyleng - 2)); return TOKEN_MATH_INLINE; }
 
 \_                          { this->setToken(TOKEN_SUBSCRIPT, "_"); return TOKEN_SUBSCRIPT; }
 
