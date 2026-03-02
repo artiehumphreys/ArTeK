@@ -15,7 +15,7 @@ LETTER          [A-Za-z]
 DIGIT           [0-9]
 COMMAND_NAME    {LETTER}+
 ENV_NAME        {LETTER}+
-TEXT            [^\\{}\n&%$]+
+TEXT            [^\\{}\n&%$^_]+
 WHITESPACE      [ \t]+
 
 %%
@@ -32,14 +32,12 @@ WHITESPACE      [ \t]+
                                 return TOKEN_NEWLINE;
                             }
 
-\\n                         {
-                                this->setToken(TOKEN_NEWLINE, std::string(yytext));
+\\\\                        {
+                                this->setToken(TOKEN_NEWLINE, "\\\\");
                                 yycolumn = 1;
                                 yylineno += 1;
                                 return TOKEN_NEWLINE;
                             }
-
-\\{COMMAND_NAME}            { this->setToken(TOKEN_COMMAND, std::string(yytext)); return TOKEN_COMMAND; }
 
 \\begin\{{ENV_NAME}\}       {
                                 std::string env = std::string(yytext + 7, yyleng - 8);
@@ -53,7 +51,9 @@ WHITESPACE      [ \t]+
                                 return TOKEN_END_ENV;
                             }
 
-\${TEXT}\$                  { this->setToken(TOKEN_MATH_INLINE, std::string(yytext + 1, yyleng - 2)); return TOKEN_MATH_INLINE; }
+\\{COMMAND_NAME}            { this->setToken(TOKEN_COMMAND, std::string(yytext)); return TOKEN_COMMAND; }
+
+\$                          { this->setToken(TOKEN_MATH_INLINE, "$"); return TOKEN_MATH_INLINE; }
 
 \_                          { this->setToken(TOKEN_SUBSCRIPT, "_"); return TOKEN_SUBSCRIPT; }
 
@@ -67,9 +67,9 @@ WHITESPACE      [ \t]+
 
 &                           { this->setToken(TOKEN_ALIGN, "&"); return TOKEN_ALIGN; }
 
-.                           { this->setToken(TOKEN_ERROR, std::string(yytext)); return TOKEN_ERROR; }
-
 %[^\n]*                     { yycolumn += yyleng; }
+
+.                           { this->setToken(TOKEN_ERROR, std::string(yytext)); return TOKEN_ERROR; }
 
 <<EOF>>                     { this->setToken(TOKEN_EOF, ""); return TOKEN_EOF; }
 
