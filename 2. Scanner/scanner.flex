@@ -1,8 +1,8 @@
 %{
-    #include "scanner.h"
+    #include "scanner.hpp"
     #include <string>
     #include <iostream>
-    #include "token.h"
+    #include "token.hpp"
 
     int Scanner::yycolumn = 1;
 %}

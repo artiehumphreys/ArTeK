@@ -1,6 +1,6 @@
 CC = g++
 FLEX = flex
-CPPFLAGS = -std=c++11 -Wall
+CPPFLAGS = -std=c++23 -Wall
 FLEXFLAGS = --c++ --yyclass=Scanner
 
 all:	scanner

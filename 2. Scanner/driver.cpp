@@ -1,5 +1,5 @@
-#include "scanner.h"
-#include "token.h"
+#include "scanner.hpp"
+#include "token.hpp"
 #include <fstream>
 #include <iostream>
 #include <string>
