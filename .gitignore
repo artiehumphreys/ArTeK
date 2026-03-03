@@ -31,3 +31,12 @@
 *.exe
 *.out
 *.app
+
+**/scanner.cpp
+**/lex.yy.c
+
+**/scanner
+!**/scanner.flex
+!**/scanner.hpp
+
+.clangd
