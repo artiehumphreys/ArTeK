@@ -2,6 +2,7 @@
 
 WindowManager::WindowManager() {
   initscr();
+  refresh();
   getmaxyx(stdscr, height, width);
 
   int log_height = height / 5;
@@ -15,6 +16,7 @@ WindowManager::WindowManager() {
 
   for (auto &pane : panes) {
     box(pane, 0, 0);
+    wmove(pane, 1, 1);
     wrefresh(pane);
   }
 }
