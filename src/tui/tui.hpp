@@ -26,4 +26,5 @@ private:
   Pane active_pane_ = EDITOR;
 
   void handleInput(int ch);
+  int maxScroll();
 };

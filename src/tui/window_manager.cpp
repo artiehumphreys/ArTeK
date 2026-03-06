@@ -1,5 +1,4 @@
 #include "window_manager.hpp"
-#include <iostream>
 #include <ncurses.h>
 
 WindowManager::WindowManager() {
@@ -36,16 +35,4 @@ void WindowManager::refreshAll() {
   for (auto &pane : panes) {
     wrefresh(pane);
   }
-}
-
-bool WindowManager::addTextToPane(Pane pane, const char *str) {
-  WINDOW *win = panes[pane];
-  int res = waddstr(win, str);
-  if (res == ERR) {
-    std::cerr << "Adding text to pane " << pane << " failed\n";
-    return false;
-  }
-
-  wrefresh(win);
-  return true;
 }

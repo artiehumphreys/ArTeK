@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(Curses REQUIRED)
 
-add_executable(driver main.cpp window_manager.cpp)
+add_executable(driver main.cpp window_manager.cpp render_engine.cpp tui.cpp)
 
 target_include_directories(driver PRIVATE ${CURSES_INCLUDE_DIRS})
 target_compile_options(driver PRIVATE -Wall -march=native)
