@@ -2,6 +2,10 @@
 
 int main() {
   WindowManager wm;
-  wgetch(wm.getPane(EDITOR));
+  cbreak();
+  int c;
+  while ((c = wgetch(wm.getPane(EDITOR))) != ERR) {
+    waddch(wm.getPane(EDITOR), c);
+  }
   return 0;
 }
