@@ -13,13 +13,11 @@ TUI::TUI(WindowManager &wm) : wm_(wm) {
 
 void TUI::run() {
   editor_buffer_.emplace_back("");
-  int x, y;
 
   while (true) {
     WINDOW *active_window = wm_.getPane(active_pane_);
-    getyx(active_window, y, x);
-    RenderEngine::draw(wm_.getPane(EDITOR), editor_buffer_, scroll_offset_, y,
-                       x);
+    RenderEngine::draw(wm_.getPane(EDITOR), editor_buffer_, scroll_offset_,
+                       cursor_row_, cursor_col_);
     int ch = wgetch(active_window);
     if (ch == 27) // ESC to quit
       break;
@@ -50,8 +48,17 @@ TUI::~TUI() = default;
 void TUI::handleInput(int ch) {
   // TODO: handle command logic
 
+  // ctrl + A, similar to tmux. TODO: make the prefix customizable
   if (ch == 1) {
     awaiting_command_ = true;
     return;
+  }
+
+  if (!awaiting_command_) {
+    if (active_pane_ != EDITOR)
+      return;
+
+    editor_buffer_[cursor_row_].insert(cursor_col_, 1, static_cast<char>(ch));
+    cursor_col_++;
   }
 }
