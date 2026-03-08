@@ -47,18 +47,43 @@ TUI::~TUI() = default;
 
 void TUI::handleInput(int ch) {
   // TODO: handle command logic
+  if (awaiting_command_) {
+    switch (ch) {
+      // TODO: better navigation
+    case 'l':
+      switchPane(OUTPUT);
+      return;
+    case 'h':
+      switchPane(EDITOR);
+      return;
+    case 'j':
+      switchPane(LOG);
+      return;
+    }
+    return;
+  }
 
-  // ctrl + A, similar to tmux. TODO: make the prefix customizable
   if (ch == 1) {
+    // ctrl + A, similar to tmux. TODO: make the prefix customizable
     awaiting_command_ = true;
     return;
   }
 
-  if (!awaiting_command_) {
-    if (active_pane_ != EDITOR)
-      return;
+  if (active_pane_ != EDITOR)
+    return;
 
-    editor_buffer_[cursor_row_].insert(cursor_col_, 1, static_cast<char>(ch));
-    cursor_col_++;
+  switch (ch) {
+  case '\n':
+  case KEY_ENTER:
+    // split current line at cursor, insert new line
+    editor_buffer_.insert(editor_buffer_.begin() + cursor_row_ + 1,
+                          editor_buffer_[cursor_row_].substr(cursor_col_));
+    editor_buffer_[cursor_row_].erase(cursor_col_);
+    cursor_row_++;
+    cursor_col_ = 0;
+    return;
   }
+
+  editor_buffer_[cursor_row_].insert(cursor_col_, 1, static_cast<char>(ch));
+  cursor_col_++;
 }
