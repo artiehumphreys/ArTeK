@@ -27,4 +27,5 @@ private:
 
   void handleInput(int ch);
   int maxScroll();
+  bool awaiting_command_ = false;
 };

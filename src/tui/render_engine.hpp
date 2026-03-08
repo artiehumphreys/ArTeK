@@ -7,5 +7,5 @@
 class RenderEngine {
 public:
   static void draw(WINDOW *win, const std::vector<std::string> &lines,
-                   int scroll_offset);
+                   int scroll_offset, int cursor_row, int cursor_col);
 };

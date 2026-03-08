@@ -3,6 +3,7 @@
 #include "render_engine.hpp"
 #include "window_manager.hpp"
 #include <algorithm>
+#include <ncurses.h>
 
 TUI::TUI(WindowManager &wm) : wm_(wm) {
   raw();
@@ -12,10 +13,14 @@ TUI::TUI(WindowManager &wm) : wm_(wm) {
 
 void TUI::run() {
   editor_buffer_.emplace_back("");
+  int x, y;
 
   while (true) {
-    RenderEngine::draw(wm_.getPane(EDITOR), editor_buffer_, scroll_offset_);
-    int ch = wgetch(wm_.getPane(active_pane_));
+    WINDOW *active_window = wm_.getPane(active_pane_);
+    getyx(active_window, y, x);
+    RenderEngine::draw(wm_.getPane(EDITOR), editor_buffer_, scroll_offset_, y,
+                       x);
+    int ch = wgetch(active_window);
     if (ch == 27) // ESC to quit
       break;
 
@@ -43,5 +48,10 @@ void TUI::scrollDown() {
 TUI::~TUI() = default;
 
 void TUI::handleInput(int ch) {
-  // TODO: handle keypresses
+  // TODO: handle command logic
+
+  if (ch == 1) {
+    awaiting_command_ = true;
+    return;
+  }
 }
