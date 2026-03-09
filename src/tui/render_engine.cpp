@@ -52,15 +52,16 @@ void RenderEngine::draw(WINDOW *win, const std::vector<std::string> &lines,
       }
 
       auto chunk = line.substr(offset, usable_width); // substr clamps bounds
-      // TODO: line numbers
       if (mvwaddnstr(win, screen_row++, screen_col, chunk.data(),
                      chunk.size()) == ERR) {
+        // TODO: log in console window
         std::cerr << "An error occurred while displaying the text editor.\n";
         return;
       }
     }
   }
 
-  wmove(win, cursor_row - scroll_offset + 1 + extra_rows, cursor_col + 4);
+  wmove(win, cursor_row - scroll_offset + 1 + extra_rows + cursor_col / usable_width,
+        cursor_col % usable_width + screen_col);
   wrefresh(win);
 }

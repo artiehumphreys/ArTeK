@@ -82,6 +82,26 @@ void TUI::handleInput(int ch) {
     cursor_row_++;
     cursor_col_ = 0;
     return;
+
+  case KEY_BACKSPACE:
+  case 127:
+    if (cursor_col_ > 0) {
+      editor_buffer_[cursor_row_].erase(cursor_col_ - 1, 1);
+      cursor_col_--;
+    } else if (cursor_row_ > 0) {
+      cursor_col_ = editor_buffer_[cursor_row_ - 1].size();
+      editor_buffer_[cursor_row_ - 1] += editor_buffer_[cursor_row_];
+      editor_buffer_.erase(editor_buffer_.begin() + cursor_row_);
+      cursor_row_--;
+    }
+    return;
+  case KEY_STAB:
+  case 9:
+    // TODO: customizable tab size
+    int tab_size = 4;
+    editor_buffer_[cursor_row_].insert(cursor_col_, tab_size, ' ');
+    cursor_col_ += tab_size;
+    return;
   }
 
   editor_buffer_[cursor_row_].insert(cursor_col_, 1, static_cast<char>(ch));
